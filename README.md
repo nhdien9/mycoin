@@ -7,6 +7,15 @@
 - Lớp: *CQ2018/3 - HK2/2021-2022*
 - Bài tập: [Xây dựng hệ thống ví điện tử *MyCoin*][exercise]
 
+## Tính năng được cài đặt
+Hệ thống ví điện tử *MyCoin* cần có các tính năng sau:
+- [ ] Tạo ví thông qua giao diện
+- [ ] Xem thống kê tài khoản
+- [ ] Gởi coin đến một địa chỉ khác
+- [ ] Xem lịch sử giao dịch
+
+> Phần tài liệu hướng dẫn sử dụng sẽ được cập nhật sau.
+
 ## Thông tin về bài làm
 Bài làm này được thực hiện bởi **Nguyễn Hữu Điền** [<1612104@student.hcmus.edu.vn>][email].
 
