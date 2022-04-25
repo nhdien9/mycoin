@@ -1,0 +1,12 @@
+{
+  "name": "MyCoin",
+  "version": "1.0.0",
+  "description": "Hệ thống ví điện tử",
+  "main": "main.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node ."
+  },
+  "keywords": [],
+  "author": "Nguyễn Hữu Điền"
+}
