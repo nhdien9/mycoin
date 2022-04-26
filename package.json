@@ -8,5 +8,8 @@
     "start": "node ."
   },
   "keywords": [],
-  "author": "Nguyễn Hữu Điền"
+  "author": "Nguyễn Hữu Điền",
+  "dependencies": {
+    "crypto-js": "^4.1.1"
+  }
 }
