@@ -10,13 +10,26 @@ class Block {
     this.data = data;
     this.previousHash = previousHash;
     this.hash = this.calculateHash();
+    this.nonce = 0;
   }
 
   /**
    * Tạo hash với SHA256 cho giao dịch.
    */
   calculateHash() {
-    return SHA256(this.index + this.previousHash + this.timestamp + JSON.stringify(this.data)).toString();
+    return SHA256(this.index + this.previousHash + this.timestamp + JSON.stringify(this.data) + this.nonce).toString();
+  }
+
+  /**
+   * Bắt đầu quá trình "đào" trên một block.
+   */
+  mineBlock(difficulty) {
+    while (this.hash.substring(0, difficulty) !== Array(difficulty + 1).join('0')) {
+      this.nonce++;
+      this.hash = this.calculateHash();
+    }
+
+    console.log(`Block đã được đào: ${this.hash}`);
   }
 }
 
@@ -26,6 +39,7 @@ class Block {
 class Blockchain {
   constructor() {
     this.chain = [this.createGenesisBlock()];
+    this.difficulty = 4; // Độ khó để "đào" một block
   }
 
   /**
@@ -49,10 +63,9 @@ class Blockchain {
   addBlock(newBlock) {
     newBlock.previousHash = this.getLatestBlock().hash;
 
-    // Cần phải cập nhật lại hash cho newBlock cho chính xác
-    // (Vì hash của một block bất kì được tính gồm cả previousHash,
-    // mà previousHash đã được cập nhật cho newBlock sau lời gọi constructor())
-    newBlock.hash = newBlock.calculateHash();
+    // Khi và chỉ khi một block đã được "đào" thành công,
+    // thì nó mới được phép thêm vào blockchain đang xét
+    newBlock.mineBlock(this.difficulty);
 
     this.chain.push(newBlock);
   }
@@ -81,20 +94,13 @@ class Blockchain {
 // Khởi tạo một blockchain mới.
 let mycoin = new Blockchain();
 
-// Thêm các block vào blockchain.
+// Tiến hành "đào" block đầu tiên.
+console.log('Đang tiến hành "đào" block đầu tiên...')
 mycoin.addBlock(new Block(1, "2022-04-25", {amount: 6}));
-mycoin.addBlock(new Block(1, "2022-04-26", {amount: 9}));
 
-// Kiểm tra tính hợp lệ của blockchain đang xét.
-console.log(`Trước khi thay đổi dữ liệu, blockchain có hợp lệ? ${mycoin.isChainValid()}`);
+// Tiến hành "đào" block thứ hai.
+console.log('Đang tiến hành "đào" block thứ hai...')
+mycoin.addBlock(new Block(1, "2022-04-26", {amount: 9}));
 
 // Xem trạng thái hiện tại của blockchain.
 // console.log(JSON.stringify(mycoin, null, 4));
-
-// Nếu cố ý thay đổi dữ liệu của một block,
-// tính hợp lệ của blockchain sẽ bị phá vỡ!
-mycoin.chain[1].data = { amount: 100 };
-// mycoin.chain[1].hash = mycoin.chain[1].calculateHash();
-
-// Kiểm tra tính hợp lệ của blockchain đang xét.
-console.log(`Sau khi thay đổi dữ liệu, blockchain có hợp lệ? ${mycoin.isChainValid()}`);

@@ -13,6 +13,7 @@ Hệ thống ví điện tử *MyCoin* cần có các tính năng sau:
 - [ ] Xem thống kê tài khoản
 - [ ] Gởi coin đến một địa chỉ khác
 - [ ] Xem lịch sử giao dịch
+- [x] Cài đặt bằng thuật toán **Proof-of-Work**
 
 > Phần tài liệu hướng dẫn sử dụng sẽ được cập nhật sau.
 
