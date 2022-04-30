@@ -1,13 +1,23 @@
 const SHA256 = require('crypto-js/sha256');
 
 /**
+ * Cấu trúc của một transaction.
+ */
+class Transaction {
+  constructor(fromAddress, toAddress, amount) {
+    this.fromAddress = fromAddress;
+    this.toAddress = toAddress;
+    this.amount = amount;
+  }
+}
+
+/**
  * Cấu trúc của một block.
  */
 class Block {
-  constructor(index, timestamp, data, previousHash = '') {
-    this.index = index;
+  constructor(timestamp, transactions, previousHash = '') {
     this.timestamp = timestamp;
-    this.data = data;
+    this.transactions = transactions;
     this.previousHash = previousHash;
     this.hash = this.calculateHash();
     this.nonce = 0;
@@ -17,7 +27,7 @@ class Block {
    * Tạo hash với SHA256 cho giao dịch.
    */
   calculateHash() {
-    return SHA256(this.index + this.previousHash + this.timestamp + JSON.stringify(this.data) + this.nonce).toString();
+    return SHA256(this.previousHash + this.timestamp + JSON.stringify(this.transactions) + this.nonce).toString();
   }
 
   /**
@@ -39,7 +49,9 @@ class Block {
 class Blockchain {
   constructor() {
     this.chain = [this.createGenesisBlock()];
-    this.difficulty = 4; // Độ khó để "đào" một block
+    this.difficulty = 2; // Độ khó để "đào" một block
+    this.pendingTransactions = [];
+    this.miningReward = 100;
   }
 
   /**
@@ -58,16 +70,59 @@ class Blockchain {
   }
 
   /**
-   * Thêm một block mới vào blockchain.
+   * Tiến hành "đào" các giao dịch đang chờ xử lý.
    */
-  addBlock(newBlock) {
-    newBlock.previousHash = this.getLatestBlock().hash;
+  minePendingTransactions(miningRewardAddress) {
+    // Trong thực tế, một miner không thể "đào" (tất cả các) pending transaction;
+    // thay vào đó, miner sẽ tiến hành chọn ra một hoặc một vài block nào đó để "đào"!
+    // (Trường hợp này là ví dụ đơn giản, để phần code xử lý được đơn giản!)
+    let block = new Block(Date.now(), this.pendingTransactions);
+    block.mineBlock(this.difficulty);
+
+    console.log('Block đã được "đào" xong!');
 
     // Khi và chỉ khi một block đã được "đào" thành công,
     // thì nó mới được phép thêm vào blockchain đang xét
-    newBlock.mineBlock(this.difficulty);
+    this.chain.push(block);
 
-    this.chain.push(newBlock);
+    // Reset lại danh sách các pending transaction,
+    // và tiến hành quá trình nhận thưởng cho miner
+    this.pendingTransactions = [
+      new Transaction(null, miningRewardAddress, this.miningReward)
+    ];
+  }
+
+  /**
+   * Tiến hành tạo một transaction.
+   */
+  createTransaction(transaction) {
+    this.pendingTransactions.push(transaction);
+  }
+
+  /**
+   * Lấy số dư tài khoản từ một địa chỉ "ví" điện tử.
+   */
+  getBalanceOfAddress(address) {
+    let balance = 0;
+
+    // Phải tiến hành duyệt lại toàn bộ blockchain để tìm số dư tài khoản
+    for (const block of this.chain) {
+      for (const transaction of block.transactions) {
+        // Nếu đã chuyển "tiền" sang một địa chỉ khác,
+        // thì cần phải trừ số "tiền" tương ứng trong tài khoản đang xét
+        if (transaction.fromAddress === address) {
+          balance -= transaction.amount;
+        }
+
+        // Nếu đã được một tài khoản khác chuyển "tiền" đến,
+        // thì cần phải cộng số "tiền" tương ứng vào tài khoản đang xét
+        if (transaction.toAddress === address) {
+          balance += transaction.amount;
+        }
+      }
+    }
+
+    return balance;
   }
 
   /**
@@ -94,13 +149,21 @@ class Blockchain {
 // Khởi tạo một blockchain mới.
 let mycoin = new Blockchain();
 
-// Tiến hành "đào" block đầu tiên.
-console.log('Đang tiến hành "đào" block đầu tiên...')
-mycoin.addBlock(new Block(1, "2022-04-25", {amount: 6}));
+// Test các transaction với 2 tài khoản.
+mycoin.createTransaction(new Transaction('address1', 'address2', 9));
+mycoin.createTransaction(new Transaction('address2', 'address1', 6));
 
-// Tiến hành "đào" block thứ hai.
-console.log('Đang tiến hành "đào" block thứ hai...')
-mycoin.addBlock(new Block(1, "2022-04-26", {amount: 9}));
+console.log('\nBắt đầu tiến hành quá trình "đào"...');
+mycoin.minePendingTransactions('address3');
 
-// Xem trạng thái hiện tại của blockchain.
-// console.log(JSON.stringify(mycoin, null, 4));
+// Kiểm tra số dư trong tài khoản "address3",
+// sau khi nó đã "đào" thành công các transaction.
+console.log(`Số dư trong tài khoản "address3" là: ${mycoin.getBalanceOfAddress('address3')}`);
+
+// Tiến hành quá trình "đào" lại một lần nữa!
+console.log('\nBắt đầu tiến hành quá trình "đào" thêm một lần nữa...');
+mycoin.minePendingTransactions('address3');
+
+// Kiểm tra lại số dư trong tài khoản "address3",
+// sau khi nó đã "đào" thành công các transaction.
+console.log(`Số dư trong tài khoản "address3" là: ${mycoin.getBalanceOfAddress('address3')}`);
