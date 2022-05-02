@@ -3,7 +3,7 @@ const EC = require('elliptic').ec;
 const ec = new EC('secp256k1');
 
 /**
- * Cấu trúc của một transaction.
+ * Cấu trúc của một giao dịch
  */
 class Transaction {
   constructor(fromAddress, toAddress, amount) {
@@ -14,14 +14,14 @@ class Transaction {
   }
 
   /**
-   * Tạo hash với SHA256 cho giao dịch.
+   * Tạo hash với SHA256 cho giao dịch
    */
   calculateHash() {
     return SHA256(this.fromAddress + this.toAddress + this.amount + this.timestamp).toString();
   }
 
   /**
-   * Sign một giao dịch với "signing key".
+   * Ký một giao dịch với `signing key`
    */
   signTransaction(signingKey) {
     if (signingKey.getPublic('hex') !== this.fromAddress) {
@@ -31,31 +31,31 @@ class Transaction {
     const hashTransaction = this.calculateHash();
     const signature = signingKey.sign(hashTransaction, 'base64');
 
-    // Lưu signature vào transaction object đang xét
+    // Lưu chữ ký vào transaction object đang xét
     this.signature = signature.toDER('hex');
   }
 
   /**
-   * Transaction có được sign hợp lệ hay không?
+   * Giao dịch có được ký hợp lệ hay không?
    */
   isValid() {
-    // Nếu một giao dịch xảy ra mà không có người chuyển "tiền",
-    // có thể giả định rằng đó là quá trình trao thưởng cho miner.
+    // Nếu một giao dịch xảy ra mà không có người chuyển coin,
+    // có thể giả định rằng đó là quá trình trao thưởng cho miner
     if (this.fromAddress === null) {
       return true;
     }
 
     if (!this.signature || this.signature.length === 0) {
-      throw new Error('Không có signature cho giao dịch này');
+      throw new Error('Không có chữ ký cho giao dịch này');
     }
 
-    const publicKey = ec.keyFromPublic(this.fromAddress, 'hex'); // Lấy public key từ transaction
-    return publicKey.verify(this.calculateHash(), this.signature); // Transaction được sign hợp lệ?
+    const publicKey = ec.keyFromPublic(this.fromAddress, 'hex'); // Lấy `public key` từ giao dịch
+    return publicKey.verify(this.calculateHash(), this.signature); // Giao dịch được ký hợp lệ?
   }
 }
 
 /**
- * Cấu trúc của một block.
+ * Cấu trúc của một block
  */
 class Block {
   constructor(timestamp, transactions, previousHash = '') {
@@ -67,14 +67,14 @@ class Block {
   }
 
   /**
-   * Tạo hash với SHA256 cho một block.
+   * Tạo hash với SHA256 cho một block
    */
   calculateHash() {
     return SHA256(this.previousHash + this.timestamp + JSON.stringify(this.transactions) + this.nonce).toString();
   }
 
   /**
-   * Bắt đầu quá trình "đào" trên một block.
+   * Bắt đầu quá trình "đào" trên một block
    */
   mineBlock(difficulty) {
     while (this.hash.substring(0, difficulty) !== Array(difficulty + 1).join('0')) {
@@ -86,7 +86,7 @@ class Block {
   }
 
   /**
-   * Xác minh tất cả các transaction có trong block.
+   * Xác minh tất cả các giao dịch có trong block
    */
   hasValidTransaction() {
     for (const transaction of this.transactions) {
@@ -100,7 +100,7 @@ class Block {
 }
 
 /**
- * Cấu trúc của một blockchain.
+ * Cấu trúc của một chain
  */
 class Blockchain {
   constructor() {
@@ -111,15 +111,14 @@ class Blockchain {
   }
 
   /**
-   * Tạo block đầu tiên trong blockchain.
+   * Tạo block đầu tiên trong chain
    */
   createGenesisBlock() {
-    // Tạo một block mới với dữ liệu bất kì.
-    return new Block(Date.parse('2022-05-01'), [], '0');
+    return new Block(Date.parse(Date.now()), [], '0');
   }
 
   /**
-   * Lấy block cuối cùng trong blockchain.
+   * Lấy block cuối cùng trong chain
    */
   getLatestBlock() {
     return this.chain[this.chain.length - 1];
@@ -133,23 +132,23 @@ class Blockchain {
     const rewardTransaction = new Transaction(null, miningRewardAddress, this.miningReward);
     this.pendingTransactions.push(rewardTransaction);
 
-    // Trong thực tế, một miner không thể "đào" (tất cả các) pending transaction;
+    // Trong thực tế, một miner không thể "đào" (tất cả các) giao dịch đang chờ xử lý;
     // thay vào đó, miner sẽ tiến hành chọn ra một hoặc một vài block nào đó để "đào"!
     // (Trường hợp này là ví dụ đơn giản, để phần code xử lý được đơn giản!)
     let block = new Block(Date.now(), this.pendingTransactions, this.getLatestBlock().hash);
     block.mineBlock(this.difficulty);
 
     // Khi và chỉ khi một block đã được "đào" thành công,
-    // thì nó mới được phép thêm vào blockchain đang xét
+    // thì nó mới được phép thêm vào chain đang xét
     console.log('Block đã được "đào" xong!');
     this.chain.push(block);
 
-    // Reset lại danh sách các pending transaction
+    // Reset lại danh sách các giao dịch đang chờ xử lý
     this.pendingTransactions = [];
   }
 
   /**
-   * Thêm một transaction vào blockchain.
+   * Thêm một giao dịch vào chain.
    */
   addTransaction(transaction) {
     if (!transaction.fromAddress || !transaction.toAddress) {
@@ -157,14 +156,14 @@ class Blockchain {
     }
 
     if (!transaction.isValid()) {
-      throw new Error('Không thể thêm bất kì transaction không hợp lệ nào vào blockchain');
+      throw new Error('Không thể thêm bất kì giao dịch không hợp lệ nào vào chain');
     }
 
     if (transaction.amount <= 0) {
-      throw new Error('Số "tiền" giao dịch phải lớn hơn 0');
+      throw new Error('Số coin giao dịch phải lớn hơn 0');
     }
 
-    // Cần phải đảm bảo rằng số "tiền" được chuyển đi
+    // Cần phải đảm bảo rằng số coin được chuyển đi
     // không được phép lớn hơn số dư hiện có trong tài khoản
     const walletBalance = this.getBalanceOfAddress(transaction.fromAddress);
     if (walletBalance < transaction.amount) {
@@ -176,8 +175,8 @@ class Blockchain {
       .filter(transaction => transaction.fromAddress === transaction.fromAddress);
 
     // Nếu tài khoản "nguồn" có nhiều giao dịch đang chờ xử lý,
-    // thì trước hết cần tính tổng số "tiền" sẽ chuyển đi.
-    // Nếu tổng số "tiền" này lớn hơn số dư có trong tài khoản,
+    // thì trước hết cần tính tổng số coin sẽ chuyển đi.
+    // Nếu tổng số coin này lớn hơn số dư có trong tài khoản,
     // thì tiến hành hủy giao dịch đó.
     if (pendingTransactionForWallet.length > 0) {
       const totalPendingAmount = pendingTransactionForWallet
@@ -186,7 +185,7 @@ class Blockchain {
 
       const totalAmount = totalPendingAmount + transaction.amount;
       if (totalAmount > walletBalance) {
-        throw new Error('Số tiền sẽ được chuyển lớn hơn số dư hiện có trong tài khoản');
+        throw new Error('Số coin sẽ được chuyển lớn hơn số dư hiện có trong tài khoản');
       }
     }
 
@@ -194,22 +193,22 @@ class Blockchain {
   }
 
   /**
-   * Lấy số dư tài khoản từ một địa chỉ "ví" điện tử.
+   * Lấy số dư tài khoản từ một địa chỉ "ví" điện tử
    */
   getBalanceOfAddress(address) {
     let balance = 0;
 
-    // Phải tiến hành duyệt lại toàn bộ blockchain để tìm số dư tài khoản
+    // Phải tiến hành duyệt lại toàn bộ chain để tìm số dư tài khoản
     for (const block of this.chain) {
       for (const transaction of block.transactions) {
-        // Nếu đã chuyển "tiền" sang một địa chỉ khác,
-        // thì cần phải trừ số "tiền" tương ứng trong tài khoản đang xét
+        // Nếu đã chuyển coin sang một địa chỉ khác,
+        // thì cần phải trừ số coin tương ứng trong tài khoản đang xét
         if (transaction.fromAddress === address) {
           balance -= transaction.amount;
         }
 
-        // Nếu đã được một tài khoản khác chuyển "tiền" đến,
-        // thì cần phải cộng số "tiền" tương ứng vào tài khoản đang xét
+        // Nếu đã được một tài khoản khác chuyển coin đến,
+        // thì cần phải cộng số coin tương ứng vào tài khoản đang xét
         if (transaction.toAddress === address) {
           balance += transaction.amount;
         }
@@ -225,7 +224,7 @@ class Blockchain {
   getAllTransactionsForWallet(address) {
     const transactions = [];
 
-    // Phải tiến hành duyệt lại toàn bộ blockchain để tìm các giao dịch
+    // Phải tiến hành duyệt lại toàn bộ chain để tìm các giao dịch
     for (const block of this.chain) {
       for (const transaction of block.transactions) {
         // Lọc ra các giao dịch có liên quan đến địa chỉ ví đang xét
@@ -239,7 +238,7 @@ class Blockchain {
   }
 
   /**
-   * Kiểm tra xem một blockchain có hợp lệ hay không?
+   * Kiểm tra xem một chain có hợp lệ hay không?
    */
   isChainValid() {
     // Kiểm tra xem block đầu tiên có bị giả mạo hay không
@@ -249,7 +248,7 @@ class Blockchain {
       return false
     }
 
-    // Kiểm tra xem các block còn lại trên blockchain
+    // Kiểm tra xem các block còn lại trên chain
     // có hash và signature trùng khớp với nhau hay không
     for (let i = 1; i < this.chain.length; i++) {
       const currentBlock = this.chain[i];
@@ -260,7 +259,7 @@ class Blockchain {
       }
 
       // Nếu có một block tồn tại giao dịch không hợp lệ,
-      // thì blockchain chứa block đó cũng sẽ là không hợp lệ.
+      // thì chain chứa block đó cũng sẽ là không hợp lệ.
       if (!currentBlock.hasValidTransaction()) {
         return false;
       }
