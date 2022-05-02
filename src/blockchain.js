@@ -1,4 +1,6 @@
 const SHA256 = require('crypto-js/sha256');
+const EC = require('elliptic').ec;
+const ec = new EC('secp256k1');
 
 /**
  * Cấu trúc của một transaction.
@@ -8,6 +10,44 @@ class Transaction {
     this.fromAddress = fromAddress;
     this.toAddress = toAddress;
     this.amount = amount;
+  }
+
+  /**
+   * Tạo hash với SHA256 cho giao dịch.
+   */
+  calculateHash() {
+    return SHA256(this.fromAddress + this.toAddress + this.amount).toString();
+  }
+
+  /**
+   * Sign một giao dịch với "signing key".
+   */
+  signTransaction(signingKey) {
+    if (signingKey.getPublic('hex') !== this.fromAddress) {
+      throw new Error("Bạn không thể sign các transaction của người khác!");
+    }
+
+    const hashTransaction = this.calculateHash();
+    const signature = signingKey.sign(hashTransaction, 'base64');
+    this.signature = signature.toDER('hex'); // Lưu signature vào transaction đang xét.
+  }
+
+  /**
+   * Transaction có được sign hợp lệ hay không?
+   */
+  isValid() {
+    // Nếu một giao dịch xảy ra mà không có người chuyển "tiền",
+    // có thể giả định rằng đó là quá trình trao thưởng cho miner.
+    if (this.fromAddress === null) {
+      return true;
+    }
+
+    if (!this.signature || this.signature.length === 0) {
+      throw new Error("Không có signature cho giao dịch này");
+    }
+
+    const publicKey = ec.keyFromPublic(this.fromAddress, 'hex'); // Lấy public key từ transaction
+    return publicKey.verify(this.calculateHash(), this.signature); // Transaction được sign hợp lệ?
   }
 }
 
@@ -24,7 +64,7 @@ class Block {
   }
 
   /**
-   * Tạo hash với SHA256 cho giao dịch.
+   * Tạo hash với SHA256 cho một block.
    */
   calculateHash() {
     return SHA256(this.previousHash + this.timestamp + JSON.stringify(this.transactions) + this.nonce).toString();
@@ -40,6 +80,19 @@ class Block {
     }
 
     console.log(`Block đã được đào: ${this.hash}`);
+  }
+
+  /**
+   * Xác minh tất cả các transaction có trong block.
+   */
+  hasValidTransaction() {
+    for (const transaction of this.transactions) {
+      if (!transaction.isValid()) {
+        return false;
+      }
+    }
+
+    return true;
   }
 }
 
@@ -93,9 +146,17 @@ class Blockchain {
   }
 
   /**
-   * Tiến hành tạo một transaction.
+   * Thêm một transaction vào blockchain.
    */
-  createTransaction(transaction) {
+  addTransaction(transaction) {
+    if (!transaction.fromAddress || !transaction.toAddress) {
+      throw new Error("Mỗi giao dịch phải có cả địa chỉ gửi và địa chỉ nhận");
+    }
+
+    if (!transaction.isValid()) {
+      throw new Error("Không thể thêm bất kì transaction không hợp lệ nào vào blockchain");
+    }
+
     this.pendingTransactions.push(transaction);
   }
 
@@ -132,6 +193,12 @@ class Blockchain {
     for (let i = 1; i < this.chain.length; i++) {
       const currentBlock = this.chain[i];
       const previousBlock = this.chain[i - 1];
+
+      // Nếu có một block tồn tại giao dịch không hợp lệ,
+      // thì blockchain chứa block đó cũng sẽ là không hợp lệ.
+      if (!currentBlock.hasValidTransaction()) {
+        return false;
+      }
 
       if (currentBlock.hash !== currentBlock.calculateHash()) {
         return false;
