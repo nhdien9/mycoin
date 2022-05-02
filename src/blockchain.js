@@ -24,7 +24,7 @@ class Transaction {
    */
   signTransaction(signingKey) {
     if (signingKey.getPublic('hex') !== this.fromAddress) {
-      throw new Error("Bạn không thể sign các transaction của người khác!");
+      throw new Error('Bạn không thể sign các transaction của người khác!');
     }
 
     const hashTransaction = this.calculateHash();
@@ -43,7 +43,7 @@ class Transaction {
     }
 
     if (!this.signature || this.signature.length === 0) {
-      throw new Error("Không có signature cho giao dịch này");
+      throw new Error('Không có signature cho giao dịch này');
     }
 
     const publicKey = ec.keyFromPublic(this.fromAddress, 'hex'); // Lấy public key từ transaction
@@ -112,7 +112,7 @@ class Blockchain {
    */
   createGenesisBlock() {
     // Tạo một block mới với dữ liệu bất kì.
-    return new Block(0, "2022-04-26", "Genesis block", "0");
+    return new Block(0, '2022-04-26', 'Genesis block', '0');
   }
 
   /**
@@ -150,11 +150,11 @@ class Blockchain {
    */
   addTransaction(transaction) {
     if (!transaction.fromAddress || !transaction.toAddress) {
-      throw new Error("Mỗi giao dịch phải có cả địa chỉ gửi và địa chỉ nhận");
+      throw new Error('Mỗi giao dịch phải có cả địa chỉ gửi và địa chỉ nhận');
     }
 
     if (!transaction.isValid()) {
-      throw new Error("Không thể thêm bất kì transaction không hợp lệ nào vào blockchain");
+      throw new Error('Không thể thêm bất kì transaction không hợp lệ nào vào blockchain');
     }
 
     this.pendingTransactions.push(transaction);
