@@ -10,13 +10,14 @@ class Transaction {
     this.fromAddress = fromAddress;
     this.toAddress = toAddress;
     this.amount = amount;
+    this.timestamp = Date.now();
   }
 
   /**
    * Tạo hash với SHA256 cho giao dịch.
    */
   calculateHash() {
-    return SHA256(this.fromAddress + this.toAddress + this.amount).toString();
+    return SHA256(this.fromAddress + this.toAddress + this.amount + this.timestamp).toString();
   }
 
   /**
@@ -29,7 +30,9 @@ class Transaction {
 
     const hashTransaction = this.calculateHash();
     const signature = signingKey.sign(hashTransaction, 'base64');
-    this.signature = signature.toDER('hex'); // Lưu signature vào transaction đang xét.
+
+    // Lưu signature vào transaction object đang xét
+    this.signature = signature.toDER('hex');
   }
 
   /**
@@ -112,7 +115,7 @@ class Blockchain {
    */
   createGenesisBlock() {
     // Tạo một block mới với dữ liệu bất kì.
-    return new Block(0, '2022-04-26', 'Genesis block', '0');
+    return new Block(Date.parse('2022-05-01'), [], '0');
   }
 
   /**
@@ -123,26 +126,26 @@ class Blockchain {
   }
 
   /**
-   * Tiến hành "đào" các giao dịch đang chờ xử lý.
+   * Tiến hành "đào" tất cả các giao dịch đang chờ xử lý,
+   * quá trình này bao gồm thêm các giao dịch thưởng cho miner
    */
   minePendingTransactions(miningRewardAddress) {
+    const rewardTransaction = new Transaction(null, miningRewardAddress, this.miningReward);
+    this.pendingTransactions.push(rewardTransaction);
+
     // Trong thực tế, một miner không thể "đào" (tất cả các) pending transaction;
     // thay vào đó, miner sẽ tiến hành chọn ra một hoặc một vài block nào đó để "đào"!
     // (Trường hợp này là ví dụ đơn giản, để phần code xử lý được đơn giản!)
-    let block = new Block(Date.now(), this.pendingTransactions);
+    let block = new Block(Date.now(), this.pendingTransactions, this.getLatestBlock().hash);
     block.mineBlock(this.difficulty);
-
-    console.log('Block đã được "đào" xong!');
 
     // Khi và chỉ khi một block đã được "đào" thành công,
     // thì nó mới được phép thêm vào blockchain đang xét
+    console.log('Block đã được "đào" xong!');
     this.chain.push(block);
 
-    // Reset lại danh sách các pending transaction,
-    // và tiến hành quá trình nhận thưởng cho miner
-    this.pendingTransactions = [
-      new Transaction(null, miningRewardAddress, this.miningReward)
-    ];
+    // Reset lại danh sách các pending transaction
+    this.pendingTransactions = [];
   }
 
   /**
@@ -155,6 +158,36 @@ class Blockchain {
 
     if (!transaction.isValid()) {
       throw new Error('Không thể thêm bất kì transaction không hợp lệ nào vào blockchain');
+    }
+
+    if (transaction.amount <= 0) {
+      throw new Error('Số "tiền" giao dịch phải lớn hơn 0');
+    }
+
+    // Cần phải đảm bảo rằng số "tiền" được chuyển đi
+    // không được phép lớn hơn số dư hiện có trong tài khoản
+    const walletBalance = this.getBalanceOfAddress(transaction.fromAddress);
+    if (walletBalance < transaction.amount) {
+      throw new Error('Không đủ số dư');
+    }
+
+    // Lấy tất cả các giao dịch đang chờ xử lý của tài khoản "nguồn"
+    const pendingTransactionForWallet = this.pendingTransactions
+      .filter(transaction => transaction.fromAddress === transaction.fromAddress);
+
+    // Nếu tài khoản "nguồn" có nhiều giao dịch đang chờ xử lý,
+    // thì trước hết cần tính tổng số "tiền" sẽ chuyển đi.
+    // Nếu tổng số "tiền" này lớn hơn số dư có trong tài khoản,
+    // thì tiến hành hủy giao dịch đó.
+    if (pendingTransactionForWallet.length > 0) {
+      const totalPendingAmount = pendingTransactionForWallet
+        .map(transaction => transaction.amount)
+        .reduce((prev, curr) => prev + curr);
+
+      const totalAmount = totalPendingAmount + transaction.amount;
+      if (totalAmount > walletBalance) {
+        throw new Error('Số tiền sẽ được chuyển lớn hơn số dư hiện có trong tài khoản');
+      }
     }
 
     this.pendingTransactions.push(transaction);
@@ -187,12 +220,44 @@ class Blockchain {
   }
 
   /**
+   * Lấy danh sách các giao dịch có liên quan đến địa chỉ ví.
+   */
+  getAllTransactionsForWallet(address) {
+    const transactions = [];
+
+    // Phải tiến hành duyệt lại toàn bộ blockchain để tìm các giao dịch
+    for (const block of this.chain) {
+      for (const transaction of block.transactions) {
+        // Lọc ra các giao dịch có liên quan đến địa chỉ ví đang xét
+        if (transaction.fromAddress === address || transaction.toAddress === address) {
+          transactions.push(transaction);
+        }
+      }
+    }
+
+    return transactions;
+  }
+
+  /**
    * Kiểm tra xem một blockchain có hợp lệ hay không?
    */
   isChainValid() {
+    // Kiểm tra xem block đầu tiên có bị giả mạo hay không
+    const realGenesis = JSON.stringify(this.createGenesisBlock());
+
+    if (realGenesis !== JSON.stringify(this.chain[0])) {
+      return false
+    }
+
+    // Kiểm tra xem các block còn lại trên blockchain
+    // có hash và signature trùng khớp với nhau hay không
     for (let i = 1; i < this.chain.length; i++) {
       const currentBlock = this.chain[i];
       const previousBlock = this.chain[i - 1];
+
+      if (previousBlock.hash !== currentBlock.previousHash) {
+        return false;
+      }
 
       // Nếu có một block tồn tại giao dịch không hợp lệ,
       // thì blockchain chứa block đó cũng sẽ là không hợp lệ.
@@ -203,10 +268,6 @@ class Blockchain {
       if (currentBlock.hash !== currentBlock.calculateHash()) {
         return false;
       }
-
-      if (currentBlock.previousHash !== previousBlock.hash) {
-        return false;
-      }
     }
 
     return true;
@@ -214,4 +275,5 @@ class Blockchain {
 }
 
 module.exports.Blockchain = Blockchain;
+module.exports.Block = Block;
 module.exports.Transaction = Transaction;
