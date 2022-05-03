@@ -1,16 +1,28 @@
 {
   "name": "mycoin",
   "version": "1.0.0",
-  "description": "Hệ thống ví điện tử",
+  "description": "Phần back-end của hệ thống ví điện tử",
   "main": "main.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node ."
+    "start": "nodemon index.js 4566 http://localhost:4566",
+    "node1": "nodemon index.js 4567 http://localhost:4567 4566",
+    "node2": "nodemon index.js 4568 http://localhost:4568 4567"
   },
-  "keywords": [],
+  "keywords": [
+    "mycoin",
+    "crypto"
+  ],
   "author": "Nguyễn Hữu Điền",
   "dependencies": {
+    "cors": "^2.8.5",
     "crypto-js": "^4.1.1",
-    "elliptic": "^6.5.4"
+    "elliptic": "^6.5.4",
+    "express": "^4.18.1",
+    "morgan": "^1.10.0",
+    "nodemon": "^2.0.16",
+    "request": "^2.88.2",
+    "socket.io": "^4.5.0",
+    "socket.io-client": "^4.5.0"
   }
 }

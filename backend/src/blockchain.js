@@ -145,6 +145,9 @@ class Blockchain {
 
     // Reset lại danh sách các giao dịch đang chờ xử lý
     this.pendingTransactions = [];
+
+    // Trả về block đã được "đào", để xử lý các thao tác khác
+    return block;
   }
 
   /**
@@ -190,6 +193,9 @@ class Blockchain {
     }
 
     this.pendingTransactions.push(transaction);
+
+    // Trả về transaction cần được "đào", để xử lý các thao tác khác
+    return transaction;
   }
 
   /**
