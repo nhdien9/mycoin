@@ -18,7 +18,10 @@ Hệ thống ví điện tử *MyCoin* cần có các tính năng sau:
 > Phần tài liệu hướng dẫn sử dụng sẽ được cập nhật sau
 
 ## Thông tin về bài làm
-Bài làm này được thực hiện bởi **Nguyễn Hữu Điền** [<1612104@student.hcmus.edu.vn>][email]
+- Bài làm này được thực hiện bởi **Nguyễn Hữu Điền** [<1612104@student.hcmus.edu.vn>][email]
+- Hệ thống ví điện tử *MyCoin* gồm 2 thành phần chính:
+  - Back-end (`./backend`): được cài đặt bằng *Node.js*
+  - Front-end (`./frontend`): được cài đặt với *Angular*
 
 ## Tài liệu tham khảo
 - Lauri Hartikka, *Naivecoin: a tutorial for building a cryptocurrency*, [https://lhartikk.github.io][naivecoin], 2022-05-28
