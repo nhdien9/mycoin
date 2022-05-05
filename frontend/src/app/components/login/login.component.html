@@ -1,0 +1,46 @@
+<app-header></app-header>
+<div class="container-fluid">
+  <div class="limiter">
+    <div class="container-login">
+      <div class="card border-0">
+        <div *ngIf="isLoading" class="d-flex justify-content-center">
+          <mat-spinner></mat-spinner>
+        </div>
+        <form
+          *ngIf="!isLoading"
+          [formGroup]="formLogin"
+          class="px-5 py-5 wrap-login shadow"
+        >
+          <span class="login-text">Đăng nhập</span>
+          <div class="form-group">
+            <input
+              class="form-control"
+              formControlName="privateKey"
+              id="privateKey"
+              name="privateKey"
+              placeholder="Private key"
+              type="text"
+            />
+          </div>
+
+          <button
+            (click)="accessWallet()"
+            [disabled]="false"
+            [disabled]="!formLogin.valid"
+            class="btn btn-primary btn-block"
+            id="Success"
+            type="submit"
+          >
+            Xác nhận
+          </button>
+
+          <div class="text-center pt-3 pointer">
+            <a (click)="createWallet()" class="border-bottom-0 create-wallet">
+              Tạo ví điện tử mới?
+            </a>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>

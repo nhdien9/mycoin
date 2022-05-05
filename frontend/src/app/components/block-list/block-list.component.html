@@ -1,0 +1,89 @@
+<div class="scroll">
+  <div
+    (click)="showTransaction(block)"
+    *ngFor="let block of chain"
+    class="card col-lg-3 mr-2 block"
+  >
+    <div class="card-body">
+      <h1 class="card-title">Block #{{ block.index }}</h1>
+    </div>
+    <ul class="list-group list-group-flush">
+      <li class="list-group-item">
+        <span class="">Hash</span>
+        <br>
+        <div class="text-truncate">
+          <small>{{ block.hash }}</small>
+        </div>
+        <br>
+        <span class="">Hash của block trước</span>
+        <br>
+        <div class="text-truncate">
+          <small>{{ block.previousHash }}</small>
+        </div>
+      </li>
+      <li class="list-group-item">
+        <span class="">Thời gian</span>
+        <br>
+        <div class="text-truncate">
+          <small>{{ block.timestamp }} </small>
+        </div>
+      </li>
+    </ul>
+  </div>
+</div>
+<div class="mt-4">
+  <div>
+    <h1>Các giao dịch</h1>
+    <div>
+      <p *ngIf="transactions.length === 0">(Không có giao dịch nào trong block này)</p>
+
+      <table
+        *ngIf="transactions.length > 0"
+        class="table table-hover table-striped"
+      >
+        <thead>
+        <tr>
+          <th scope="col">#</th>
+          <th scope="col">Từ</th>
+          <th scope="col">Đến</th>
+          <th scope="col">Số coin</th>
+          <th scope="col">Thời gian</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr *ngFor="let transaction of transactions; index as index">
+          <td>{{ index }}</td>
+          <td class="text-truncate" style="max-width: 100px">
+            <a *ngIf="transaction.fromAddress !== null">{{ transaction.fromAddress }}</a>
+
+            <span *ngIf="transaction.fromAddress === null">Hệ thống</span>
+            <br>
+            <span *ngIf="transaction.fromAddress === myWalletAddress">
+              <small>(Tài khoản hiện tại)</small>
+            </span>
+          </td>
+          <td class="text-truncate" style="max-width: 100px">
+            <a>{{ transaction.toAddress }}</a>
+            <span *ngIf="transaction.toAddress === myWalletAddress"
+            ><br><small>(Tài khoản hiện tại)</small></span
+            >
+          </td>
+          <td>
+            {{ transaction.amount }}
+            <span *ngIf="transaction.fromAddress === null"
+            ><br><small>(Phần thưởng)</small></span
+            >
+          </td>
+          <td>
+            {{
+            transaction.timestamp | date: "YYYY-MM-dd HH:mm"
+            }}
+            <br>
+            <span><small>({{ transaction.timestamp }})</small></span>
+          </td>
+        </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>

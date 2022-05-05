@@ -1,0 +1,77 @@
+<app-header></app-header>
+<div class="container-fluid">
+  <div class="row">
+    <div class="col-lg-2 pl-0">
+      <app-left-menu></app-left-menu>
+    </div>
+    <div class="col-lg-10">
+      <div>
+        <h1 class="mt-4">Giao dịch chuyển coin</h1>
+        <h3 class="mb-4">Chuyển coin đến một ví điện tử khác khác?</h3>
+        <div
+          *ngIf="err_message"
+          class="alert alert-warning alert-dismissible fade show"
+          role="alert"
+        >
+          <button
+            (click)="resetErrMsg()"
+            aria-label="Close"
+            class="close"
+            data-dismiss="alert"
+            type="button"
+          >
+            <span aria-hidden="true">&times;</span>
+          </button>
+          {{ err_message }}
+        </div>
+      </div>
+      <div>
+        <form [formGroup]="formSend">
+          <div class="form-group">
+            <span>Địa chỉ ví của bạn:</span>
+            <input
+              class="form-control"
+              formControlName="fromPublicKey"
+              id="fromPublicKey"
+              name="fromPublicKey"
+              readonly
+              type="text"
+            />
+          </div>
+          <div class="form-group">
+            <span>Địa chỉ ví thụ hưởng:</span>
+            <input
+              class="form-control"
+              formControlName="toPublicKey"
+              id="toPublicKey"
+              name="toPublicKey"
+              placeholder="Địa chỉ ví điện tử mà bạn cần chuyển coin đến"
+              type="text"
+            />
+          </div>
+          <div class="form-group">
+            <span>Số tiền:</span>
+            <input
+              class="form-control"
+              formControlName="amount"
+              id="amount"
+              name="amount"
+              placeholder="Số coin"
+              type="text"
+            />
+          </div>
+
+          <button
+            (click)="send()"
+            [disabled]="!formSend.valid"
+            class="btn btn-primary btn-block"
+            id="Success"
+            type="submit"
+          >
+            Đồng ý và bắt đầu giao dịch
+          </button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>

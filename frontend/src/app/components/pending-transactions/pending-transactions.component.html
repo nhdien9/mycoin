@@ -1,0 +1,103 @@
+<app-header></app-header>
+<div class="container-fluid">
+  <div class="row">
+    <div class="col-lg-2 pl-0">
+      <app-left-menu></app-left-menu>
+    </div>
+    <div class="col-lg-10" *ngIf="isLoading">
+      <div class="d-flex justify-content-center">
+        <mat-spinner></mat-spinner>
+      </div>
+    </div>
+    <div class="col-lg-10" *ngIf="!isLoading">
+      <div>
+        <h1 class="mt-4">Các giao dịch chờ xử lý</h1>
+        <h3 class="mb-4">
+          Các giao dịch đang chờ xác nhận trước khi được thêm vào block kế tiếp
+        </h3>
+      </div>
+
+      <div *ngIf="dataSource.data.length > 0">
+        <mat-table
+          [dataSource]="dataSource"
+          class="mat-elevation-z0"
+          id="device-table"
+        >
+          <ng-container matColumnDef="position">
+            <mat-header-cell *matHeaderCellDef>#</mat-header-cell>
+            <mat-cell *matCellDef="let element; let i = index">
+              {{ i + 1 }}
+            </mat-cell>
+          </ng-container>
+
+          <ng-container matColumnDef="fromAddress">
+            <mat-header-cell
+              *matHeaderCellDef
+              style="max-width: 300px"
+              class="mr-2 ml-2"
+            >
+              Từ
+            </mat-header-cell>
+            <mat-cell
+              *matCellDef="let element"
+              style="max-width: 300px"
+              class="mr-2 ml-2"
+            >
+              {{ element.fromAddress }}
+            </mat-cell>
+          </ng-container>
+
+          <ng-container matColumnDef="toAddress">
+            <mat-header-cell
+              *matHeaderCellDef
+              style="max-width: 300px"
+              class="mr-2 ml-2"
+            >
+              Đến
+            </mat-header-cell>
+            <mat-cell
+              *matCellDef="let element"
+              style="max-width: 300px"
+              class="mr-2 ml-2"
+            >
+              {{ element.toAddress }}
+            </mat-cell>
+          </ng-container>
+
+          <ng-container matColumnDef="amount">
+            <mat-header-cell *matHeaderCellDef> Số coin </mat-header-cell>
+            <mat-cell *matCellDef="let element">
+              {{ element.amount }}
+            </mat-cell>
+          </ng-container>
+
+          <ng-container matColumnDef="timestamp">
+            <mat-header-cell *matHeaderCellDef> Thời gian </mat-header-cell>
+            <mat-cell *matCellDef="let element">
+              {{ element.timestamp | date: "YYYY-MM-dd HH:mm" }}
+            </mat-cell>
+          </ng-container>
+
+          <mat-header-row
+            *matHeaderRowDef="displayedColumns"
+            id="header"
+          ></mat-header-row>
+          <mat-row *matRowDef="let row; columns: displayedColumns"></mat-row>
+        </mat-table>
+      </div>
+      <div *ngIf="dataSource.data.length == 0">
+        <H2>(Không có giao dịch nào cần chờ được xác nhận)</H2>
+      </div>
+      <div *ngIf="dataSource.data.length > 0">
+        <button
+          id="Success"
+          class="btn btn-primary btn-block mt-2"
+          (click)="startMining()"
+          [disabled]="dataSource.data.length == 0"
+        >
+          Xác nhận các giao dịch
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,10 +1,29 @@
-import { NgModule } from '@angular/core';
-import { RouterModule, Routes } from '@angular/router';
+import {HistoryComponent} from './components/history/history.component';
+import {PendingTransactionsComponent} from './components/pending-transactions/pending-transactions.component';
+import {SendComponent} from './components/send/send.component';
+import {NgModule} from '@angular/core';
+import {RouterModule, Routes} from '@angular/router';
+import {HomeComponent} from './components/home/home.component';
+import {LoginComponent} from './components/login/login.component';
+import {AuthGuard} from './shared/guards/auth-guard.service';
 
-const routes: Routes = [];
+const routes: Routes = [
+  {path: 'login', component: LoginComponent},
+  {path: 'home', component: HomeComponent, canActivate: [AuthGuard]},
+  {path: 'send', component: SendComponent, canActivate: [AuthGuard]},
+  {
+    path: 'pending-transaction',
+    component: PendingTransactionsComponent,
+    canActivate: [AuthGuard],
+  },
+  {path: 'history', component: HistoryComponent, canActivate: [AuthGuard]},
+  {path: '', redirectTo: 'login', pathMatch: 'full'},
+];
 
 @NgModule({
   imports: [RouterModule.forRoot(routes)],
-  exports: [RouterModule]
+  providers: [AuthGuard],
+  exports: [RouterModule],
 })
-export class AppRoutingModule { }
+export class AppRoutingModule {
+}

@@ -1,0 +1,63 @@
+<nav class="list-group" id="left-menu">
+  <button
+    [routerLinkActiveOptions]="{ exact: true }"
+    [routerLinkActive]="['active']"
+    [routerLink]="['/home']"
+    aria-controls="home"
+    class="list-group-item list-group-item-action border-0 button-border mt-2"
+    data-toggle="list"
+    id="list-home-list"
+    role="tab"
+  >
+    <div>
+      <mat-icon class="mb-0">home</mat-icon>
+      Trang chủ
+    </div>
+  </button>
+
+  <button
+    [routerLinkActiveOptions]="{ exact: true }"
+    [routerLinkActive]="['active']"
+    [routerLink]="['/send']"
+    aria-controls="device"
+    class="list-group-item list-group-item-action border-0 button-border mt-2"
+    data-toggle="list"
+    id="list-device-list"
+    role="tab"
+  >
+    <div>
+      <mat-icon>send</mat-icon>
+      Giao dịch chuyển coin
+    </div>
+  </button>
+
+  <button
+    [routerLinkActiveOptions]="{ exact: true }"
+    [routerLinkActive]="['active']"
+    [routerLink]="['/pending-transaction']"
+    aria-controls="settings"
+    class="list-group-item list-group-item-action border-0 button-border mt-2"
+    data-toggle="list"
+    role="tab"
+  >
+    <div>
+      <mat-icon>view_list</mat-icon>
+      Giao dịch chờ xác nhận
+    </div>
+  </button>
+
+  <button
+    [routerLinkActiveOptions]="{ exact: true }"
+    [routerLinkActive]="['active']"
+    [routerLink]="['/history']"
+    aria-controls="settings"
+    class="list-group-item list-group-item-action border-0 button-border mt-2"
+    data-toggle="list"
+    role="tab"
+  >
+    <div>
+      <mat-icon>history</mat-icon>
+      Lịch sử các giao dịch
+    </div>
+  </button>
+</nav>

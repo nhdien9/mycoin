@@ -1,0 +1,75 @@
+<app-header></app-header>
+<div class="container-fluid">
+  <div class="row">
+    <div class="col-lg-2 pl-0">
+      <app-left-menu></app-left-menu>
+    </div>
+    <div class="col-lg-10">
+      <div class="mt-4">
+        <div>
+          <h1 class="mt-4">Lịch sử các giao dịch</h1>
+          <h3 class="mb-4">
+          Các giao dịch có liên quan đến địa chỉ ví điện tử này
+        </h3>
+          <div>
+            <p *ngIf="history.length === 0">(Không có giao dịch nào trong block này)</p>
+
+            <table
+              *ngIf="history.length > 0"
+              class="table table-hover table-striped"
+            >
+              <thead>
+              <tr>
+                <th scope="col">#</th>
+                <th scope="col">Gửi từ</th>
+                <th scope="col">Đến</th>
+                <th scope="col">Số tiền</th>
+                <th scope="col">Thời gian</th>
+              </tr>
+              </thead>
+              <tbody>
+              <tr *ngFor="let transaction of history; index as index">
+                <td>{{ index }}</td>
+                <td class="text-truncate" style="max-width: 100px">
+                  <a *ngIf="transaction.fromAddress !== null">{{ transaction.fromAddress }}</a>
+                  <span
+                    *ngIf="transaction.fromAddress === myWalletAddress"
+                    class="text-muted"
+                  >
+                      <br/><small>(Tài khoản hiện tại)</small></span
+                  >
+                  <span *ngIf="transaction.fromAddress === null">Hệ thống</span>
+                </td>
+                <td class="text-truncate" style="max-width: 100px">
+                  <a>{{ transaction.toAddress }}</a>
+                  <br/>
+                  <span
+                    *ngIf="transaction.toAddress === myWalletAddress"
+                    class="text-muted"
+                  ><small>(Tài khoản hiện tại)</small></span
+                  >
+                </td>
+                <td>
+                  {{ transaction.amount }}
+
+                  <span *ngIf="transaction.fromAddress === null" class="text-muted"
+                  ><br/><small>(Phần thưởng)</small></span
+                  >
+                </td>
+                <td>
+                  {{
+                  transaction.timestamp | date: "YYYY-MM-dd HH:mm:ss"
+                  }}<br/>
+                  <span class="text-muted"
+                  ><small>({{ transaction.timestamp }})</small></span
+                  >
+                </td>
+              </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
