@@ -15,7 +15,9 @@ Hệ thống ví điện tử *MyCoin* cần có các tính năng sau:
 - [x] Xem lịch sử giao dịch
 - [x] Cài đặt bằng thuật toán **Proof-of-Work**
 
-> **Phần demo và hướng dẫn sử dụng** được ghi hình và lưu thành file [demo.mp4](./demo.mp4) trong thư mục này.
+## Video demo tính năng
+Xem phần demo các tính năng có thể xem tại YouTube: [https://youtu.be/tEMcdQgufOw](https://youtu.be/tEMcdQgufOw)
+
 
 ## Thông tin về bài làm
 - Bài làm này được thực hiện bởi **Nguyễn Hữu Điền** [<1612104@student.hcmus.edu.vn>][email]
