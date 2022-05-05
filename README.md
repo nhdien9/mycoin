@@ -9,10 +9,10 @@
 
 ## Tính năng được cài đặt
 Hệ thống ví điện tử *MyCoin* cần có các tính năng sau:
-- [ ] Tạo ví thông qua giao diện
-- [ ] Xem thống kê tài khoản
-- [ ] Gửi coin đến một địa chỉ khác
-- [ ] Xem lịch sử giao dịch
+- [x] Tạo ví thông qua giao diện
+- [x] Xem thống kê tài khoản
+- [x] Gửi coin đến một địa chỉ khác
+- [x] Xem lịch sử giao dịch
 - [x] Cài đặt bằng thuật toán **Proof-of-Work**
 
 > Phần tài liệu hướng dẫn sử dụng sẽ được cập nhật sau
