@@ -24,10 +24,10 @@ Hệ thống ví điện tử *MyCoin* cần có các tính năng sau:
   - Front-end (`./frontend`): được cài đặt với *Angular*
 
 ## Tài liệu tham khảo
-- Lauri Hartikka, *Naivecoin: a tutorial for building a cryptocurrency*, [https://lhartikk.github.io][https://lhartikk.github.io], 2022-04-28
-- Alfrick Opidi, *How To Build A Simple Cryptocurrency Blockchain In Node.js*, [https://www.smashingmagazine.com/2020/02/cryptocurrency-blockchain-node-js][https://www.smashingmagazine.com/2020/02/cryptocurrency-blockchain-node-js], Smashing Magazine, 2022-05-03
-- Spenser Huang, *Learn & Build a Javascript Blockchain*, [https://medium.com/@spenserhuang/learn-build-a-javascript-blockchain-part-1-ca61c285821e][https://medium.com/@spenserhuang/learn-build-a-javascript-blockchain-part-1-ca61c285821e], Medium, 2022-05-02
-- Coding Tech, *Blockchain 101 (or How to Build a Blockchain with JavaScript)*, [https://www.youtube.com/watch?v=JiEAuaNFZGo][https://www.youtube.com/watch?v=JiEAuaNFZGo], YouTube, 2022-05-03
+- Lauri Hartikka, *Naivecoin: a tutorial for building a cryptocurrency*, [https://lhartikk.github.io](https://lhartikk.github.io), 2022-04-28
+- Alfrick Opidi, *How To Build A Simple Cryptocurrency Blockchain In Node.js*, [https://www.smashingmagazine.com/2020/02/cryptocurrency-blockchain-node-js](https://www.smashingmagazine.com/2020/02/cryptocurrency-blockchain-node-js), Smashing Magazine, 2022-05-03
+- Spenser Huang, *Learn & Build a Javascript Blockchain*, [https://medium.com/@spenserhuang/learn-build-a-javascript-blockchain-part-1-ca61c285821e](https://medium.com/@spenserhuang/learn-build-a-javascript-blockchain-part-1-ca61c285821e), Medium, 2022-05-02
+- Coding Tech, *Blockchain 101 (or How to Build a Blockchain with JavaScript)*, [https://www.youtube.com/watch?v=JiEAuaNFZGo](https://www.youtube.com/watch?v=JiEAuaNFZGo), YouTube, 2022-05-03
 
 [exercise]: https://courses.fit.hcmus.edu.vn/mod/assign/view.php?id=92265
 [email]: mailto:1612104@student.hcmus.edu.vn
