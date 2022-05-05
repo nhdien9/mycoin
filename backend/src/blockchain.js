@@ -82,7 +82,7 @@ class Block {
       this.hash = this.calculateHash();
     }
 
-    console.log(`Block đã được đào: ${this.hash}`);
+    console.log(`Block được "đào": ${this.hash}`);
   }
 
   /**

@@ -39,7 +39,7 @@ export class CreateWalletComponent implements OnInit {
     const blob = new Blob([JSON.stringify(this.createWalletForm.value)], {
       type: 'text/plain;charset=utf-8',
     });
-    saveAs(blob, 'myWallet.txt');
+    saveAs(blob, `mycoin-wallet.txt`);
   }
 
   ngOnInit(): void {
