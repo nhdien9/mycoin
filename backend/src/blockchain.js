@@ -88,7 +88,7 @@ class Block {
   /**
    * Xác minh tất cả các giao dịch có trong block
    */
-  hasValidTransaction() {
+  hasValidTransactions() {
     for (const transaction of this.transactions) {
       if (!transaction.isValid()) {
         return false;
@@ -151,7 +151,7 @@ class Blockchain {
   }
 
   /**
-   * Thêm một giao dịch vào chain.
+   * Thêm một giao dịch vào chain
    */
   addTransaction(transaction) {
     if (!transaction.fromAddress || !transaction.toAddress) {
@@ -266,7 +266,7 @@ class Blockchain {
 
       // Nếu có một block tồn tại giao dịch không hợp lệ,
       // thì chain chứa block đó cũng sẽ là không hợp lệ.
-      if (!currentBlock.hasValidTransaction()) {
+      if (!currentBlock.hasValidTransactions()) {
         return false;
       }
 
