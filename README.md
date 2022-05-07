@@ -16,8 +16,7 @@ Hệ thống ví điện tử *MyCoin* cần có các tính năng sau:
 - [x] Cài đặt bằng thuật toán **Proof-of-Work**
 
 ## Video demo tính năng
-Xem phần demo các tính năng có thể xem tại YouTube: [https://youtu.be/tEMcdQgufOw](https://youtu.be/tEMcdQgufOw)
-
+Phần demo và hướng dẫn sử dụng các tính năng có thể xem tại: [https://youtu.be/0cqlZVvuMos](https://youtu.be/0cqlZVvuMos)
 
 ## Thông tin về bài làm
 - Bài làm này được thực hiện bởi **Nguyễn Hữu Điền** [<1612104@student.hcmus.edu.vn>][email]
